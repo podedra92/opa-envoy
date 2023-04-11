@@ -28,12 +28,12 @@ static_resources:
               "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
               providers:
                 provider_azad:
-                  issuer: https://login.microsoftonline.com/<TEANANT>/v2.0
-                  audiences: <AUD>
+                  issuer: https://login.microsoftonline.com/<TenantID>/v2.0
+                  audiences: <ClientID>
                   forward: true
                   remote_jwks:
                     http_uri:
-                      uri: "https://login.microsoftonline.com/<TEANANT>/discovery/v2.0/keys"
+                      uri: "https://login.microsoftonline.com/<TenantID>/discovery/v2.0/keys"
                       cluster: azad
                       timeout: 10s
                     cache_duration: 
@@ -47,14 +47,14 @@ static_resources:
                   provider_and_audiences:
                     provider_name: provider_azad
                     audiences:
-                      <AUD>
+                      <ClientID>
               - match:
-                  prefix: /namespace
+                  prefix: /workspaces
                 requires:
                   provider_and_audiences:
                     provider_name: provider_azad
                     audiences:
-                      <AUD>
+                      <ClientID>
           - name: envoy.ext_authz
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
@@ -67,7 +67,6 @@ static_resources:
                 google_grpc:
                   target_uri: opa:9191
                   stat_prefix: ext_authz
-                timeout: 0.5s
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router         
@@ -83,7 +82,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: mock-api
+                address: dummy-api
                 port_value: 8080
   - name: azad
     connect_timeout: 100s
@@ -104,7 +103,6 @@ static_resources:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
         sni: login.microsoftonline.com
 admin:
-  access_log_path: "/dev/null"
   address:
     socket_address:
       address: 0.0.0.0

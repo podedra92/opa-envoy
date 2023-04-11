@@ -10,9 +10,9 @@ def main():
 def common():
     return {"message": "common"}
 
-@app.get("/namespace/{id}")
+@app.get("/workspaces/{id}")
 def namespace(id):
-    return {"message": f"You have access to namespace {id}"}
+    return {"message": f"You have access to workspace {id}"}
 
 @app.get('/health')
 def health():
